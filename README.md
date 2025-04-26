@@ -1,20 +1,21 @@
 # iCloud Contact Management
 
-A minimalist, Apple-style web app to clean, organize, and beautify your iCloud contacts.
+A simple tool to clean, edit, and export your iCloud Contacts.
 
 ## Features
-- Upload and edit exported `.vcf` contact files.
-- Bulk delete, edit, export as CSV or VCF.
-- Add multiple custom tags (e.g., Family, Work, Friends).
-- Highlight upcoming birthdays (within 30 days 🎂).
-- Switch between Light and Dark Mode.
+- Auto Capitalize First Name & Last Name
+- Phone Number Formatter (+6xxx-xxxx xxxx)
+- Upload Profile Photo
+- Birthday Date Picker (DD/MM/YYYY format)
+- Tagging (Family, Friends, Work, Others)
+- Dark Mode Switch
+- Export to CSV and VCF (Coming soon)
 
-## How to Use
-1. Export your iCloud contacts as `.vcf`.
-2. Open the website.
-3. Upload your `.vcf` file.
-4. Edit, clean, tag contacts.
-5. Export back to `.vcf` or `.csv` when done!
+## Setup
+1. Clone or download the repository.
+2. Open `index.html` directly in your browser.
+3. No server needed (100% frontend).
 
 ---
-Built with ❤️ for Mac users.
+
+Made with ❤️ for Mac users.
