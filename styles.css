@@ -1,131 +1,75 @@
 :root {
-    --background: #f9f9fa;
-    --foreground: #111;
-    --accent: #0071e3;
-    --card-background: #fff;
-  }
-  
-  body.dark {
-    --background: #111;
-    --foreground: #f9f9fa;
-    --accent: #0a84ff;
-    --card-background: #1c1c1e;
-  }
-  
-  * {
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--background);
-    color: var(--foreground);
-    transition: background 0.3s, color 0.3s;
-  }
-  
-  header {
-    padding: 2rem;
-    text-align: center;
-    background-color: var(--card-background);
-    border-bottom: 1px solid #ddd;
-  }
-  
-  h1 {
-    margin: 0;
-    font-size: 2rem;
-  }
-  
-  header button {
-    margin-top: 1rem;
-    background: none;
-    border: 1px solid var(--foreground);
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    color: var(--foreground);
-    background-color: transparent;
-  }
-  
-  .upload-section {
-    text-align: center;
-    margin: 2rem 0;
-  }
-  
-  .upload-section input[type="file"] {
-    display: none;
-  }
-  
-  .upload-section label {
-    padding: 0.5rem 1rem;
-    background-color: var(--accent);
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .actions {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .actions button {
-    margin: 0 0.5rem;
-    padding: 0.4rem 1rem;
-    background-color: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .table-container {
-    max-width: 100%;
-    overflow-x: auto;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--card-background);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
-  th, td {
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-  
-  tr:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  
-  .highlight-birthday {
-    color: var(--accent);
-    font-weight: bold;
-  }
-  
-  footer {
-    text-align: center;
-    font-size: 0.85rem;
-    padding: 1rem;
-    color: #888;
-  }
+  --bg: #ffffff;
+  --text: #222;
+  --accent: #0077ff;
+}
 
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
+[data-theme="dark"] {
+  --bg: #121212;
+  --text: #f0f0f0;
+  --accent: #3399ff;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s;
+}
+
+header {
+  text-align: center;
+  padding: 20px;
 }
 
 .logo {
-  width: 32px;
-  height: 32px;
-  color: var(--foreground);
+  width: 60px;
+  height: 60px;
+}
+
+.upload-section,
+.form-section,
+.actions,
+.table-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 15px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid var(--accent);
+  text-align: center;
+}
+
+#darkModeToggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
