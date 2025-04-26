@@ -1,154 +1,97 @@
 let contacts = [];
+let profilePhotoBase64 = '';
 
-document.getElementById("vcfInput").addEventListener("change", handleFile);
-document.getElementById("deleteSelected").addEventListener("click", deleteSelected);
-document.getElementById("exportCsv").addEventListener("click", exportToCsv);
-document.getElementById("exportVcf").addEventListener("click", exportToVcf);
-document.getElementById("selectAll").addEventListener("change", function () {
-  document.querySelectorAll('input[type="checkbox"].row-check').forEach(cb => cb.checked = this.checked);
-});
-document.getElementById("darkModeToggle").addEventListener("click", () => {
-  document.body.classList.toggle("dark");
+document.getElementById('photoInput').addEventListener('change', handlePhotoUpload);
+document.getElementById('saveContact').addEventListener('click', saveContact);
+document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+
+// Capitalize input fields
+['firstName', 'lastName'].forEach(id => {
+  document.getElementById(id).addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/\b\w/g, l => l.toUpperCase());
+  });
 });
 
-function handleFile(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    parseVCF(e.target.result);
-    renderTable();
+// Phone formatting
+['phone1', 'phone2'].forEach(id => {
+  const input = document.getElementById(id);
+  input.addEventListener('input', () => input.value = formatPhone(input.value));
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+    input.value = formatPhone(pasteData);
+  });
+});
+
+// Birthday picker
+flatpickr("#birthday", {
+  dateFormat: "d/m/Y"
+});
+
+// Save Contact
+function saveContact() {
+  const contact = {
+    firstName: capitalizeWords(document.getElementById('firstName').value.trim()),
+    lastName: capitalizeWords(document.getElementById('lastName').value.trim()),
+    phone1: formatPhone(document.getElementById('phone1').value.trim()),
+    phone2: formatPhone(document.getElementById('phone2').value.trim()),
+    email: document.getElementById('email').value.trim(),
+    birthday: document.getElementById('birthday').value.trim(),
+    tags: document.getElementById('tags').value,
+    photo: profilePhotoBase64
   };
-  reader.readAsText(file);
+  contacts.push(contact);
+  renderContacts();
+  clearForm();
 }
 
-function parseVCF(vcfText) {
-  const entries = vcfText.split("END:VCARD");
-  contacts = entries.map(entry => {
-    let getField = (regex) => {
-      const match = entry.match(regex);
-      return match ? match[1].trim() : "";
-    };
-
-    const fullName = getField(/FN:(.+)/i);
-    const [firstName, ...rest] = fullName.split(" ");
-    const lastName = rest.join(" ");
-    const phoneFields = [...entry.matchAll(/TEL[^:]*:(.+)/gi)].map(m => cleanPhone(m[1]));
-    const email = getField(/EMAIL[^:]*:(.+)/i);
-    const birthday = getField(/BDAY:(.+)/i);
-
-    return {
-      firstName,
-      lastName,
-      phone1: phoneFields[0] || "",
-      phone2: phoneFields[1] || "",
-      email,
-      birthday,
-      tags: ""
-    };
-  }).filter(c => c.firstName || c.phone1);
-}
-
-function cleanPhone(phone) {
-  phone = phone.replace(/\D/g, "");
-  if (!phone.startsWith("6")) phone = "6" + phone;
-  return "+" + phone;
-}
-
-function renderTable() {
-  const tbody = document.querySelector("#contactsTable tbody");
-  tbody.innerHTML = "";
-
-  contacts.forEach((c, i) => {
-    const birthdayHtml = formatBirthday(c.birthday);
-
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td><input type="checkbox" class="row-check" data-index="${i}"></td>
-      <td contenteditable="true">${c.firstName}</td>
-      <td contenteditable="true">${c.lastName}</td>
-      <td contenteditable="true">${c.phone1}</td>
-      <td contenteditable="true">${c.phone2}</td>
-      <td contenteditable="true">${c.email}</td>
-      <td contenteditable="true" class="${birthdayHtml.isSoon ? 'highlight-birthday' : ''}">${birthdayHtml.text}</td>
-      <td contenteditable="true">${c.tags}</td>
+function renderContacts() {
+  const tbody = document.querySelector('#contactsTable tbody');
+  tbody.innerHTML = '';
+  contacts.forEach((c, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="checkbox" data-index="${index}"></td>
+      <td>${c.firstName}</td>
+      <td>${c.lastName}</td>
+      <td>${c.phone1}</td>
+      <td>${c.phone2}</td>
+      <td>${c.email}</td>
+      <td>${c.birthday}</td>
+      <td>${c.tags}</td>
     `;
-
-    [...row.children].forEach((cell, idx) => {
-      if (cell.isContentEditable) {
-        cell.addEventListener("input", () => {
-          const fields = ["firstName", "lastName", "phone1", "phone2", "email", "birthday", "tags"];
-          contacts[i][fields[idx - 1]] = cell.textContent.trim();
-        });
-      }
-    });
-
-    tbody.appendChild(row);
+    tbody.appendChild(tr);
   });
 }
 
-function deleteSelected() {
-  const checks = document.querySelectorAll(".row-check:checked");
-  const indexesToDelete = Array.from(checks).map(cb => parseInt(cb.dataset.index));
-  contacts = contacts.filter((_, i) => !indexesToDelete.includes(i));
-  renderTable();
+function formatPhone(value) {
+  value = value.replace(/\D/g, '');
+  if (!value.startsWith('6')) value = '6' + value;
+  value = '+' + value;
+  if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
+  if (value.length > 10) value = value.slice(0, 10) + ' ' + value.slice(10);
+  return value.slice(0, 15);
 }
 
-function exportToCsv() {
-  const csv = ["First Name,Last Name,Phone 1,Phone 2,Email,Birthday,Tags"];
-  contacts.forEach(c => {
-    csv.push([
-      c.firstName,
-      c.lastName,
-      c.phone1,
-      c.phone2,
-      c.email,
-      c.birthday,
-      c.tags
-    ].map(v => `"${v}"`).join(","));
-  });
-  downloadFile(csv.join("\n"), "contacts.csv", "text/csv");
+function capitalizeWords(str) {
+  return str.replace(/\b\w/g, l => l.toUpperCase());
 }
 
-function exportToVcf() {
-  const vcf = contacts.map(c => {
-    return `BEGIN:VCARD
-VERSION:3.0
-FN:${c.firstName} ${c.lastName}
-N:${c.lastName};${c.firstName};;;
-TEL;TYPE=CELL:${c.phone1}
-${c.phone2 ? `TEL;TYPE=CELL:${c.phone2}` : ""}
-${c.email ? `EMAIL:${c.email}` : ""}
-${c.birthday ? `BDAY:${c.birthday}` : ""}
-END:VCARD`;
-  }).join("\n");
-
-  downloadFile(vcf, "contacts_cleaned.vcf", "text/vcard");
-}
-
-function downloadFile(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function formatBirthday(dateStr) {
-  if (!dateStr) return { text: "", isSoon: false };
-
-  const today = new Date();
-  const bday = new Date(dateStr);
-  const nextBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
-
-  if (nextBday < today) nextBday.setFullYear(today.getFullYear() + 1);
-
-  const diffDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
-  const isSoon = diffDays <= 30;
-
-  return {
-    text: dateStr + (isSoon ? " 🎂" : ""),
-    isSoon
+function handlePhotoUpload(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    profilePhotoBase64 = evt.target.result.split(',')[1];
   };
+  if (file) reader.readAsDataURL(file);
 }
+
+function toggleDarkMode() {
+  document.body.toggleAttribute('data-theme');
+}
+
+function clearForm() {
+  document.getElementById('contact-form')?.reset();
+}
+
+// (Add Export CSV and Export VCF later if you need)
