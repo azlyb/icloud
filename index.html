@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iCloud Contact Management</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>iCloud Contact Management</h1>
+    <p>A minimalist tool to clean and organize your iCloud contacts.</p>
+    <button id="darkModeToggle">🌙 Dark Mode</button>
+  </header>
+
+  <main>
+    <section class="upload-section">
+      <input type="file" id="vcfInput" accept=".vcf" />
+      <label for="vcfInput">Choose .vcf File</label>
+    </section>
+
+    <section class="actions">
+      <button id="deleteSelected">Delete Selected</button>
+      <button id="exportCsv">Export to CSV</button>
+      <button id="exportVcf">Export to VCF</button>
+    </section>
+
+    <section class="table-container">
+      <table id="contactsTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll" /></th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Phone 1</th>
+            <th>Phone 2</th>
+            <th>Email</th>
+            <th>Birthday</th>
+            <th>Tags</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built with ❤️ for Mac users who care about clean contacts.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
